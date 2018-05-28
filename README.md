@@ -1,7 +1,7 @@
 # HDAC_payout
 
 * 2018-05-24
-* hdac.moricpool.com
+* http://hdac.moricpool.com
 * mman@entiz.com
 
 ## Payout batch command for HDAC Nomp Pool 
