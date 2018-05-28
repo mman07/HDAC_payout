@@ -10,7 +10,8 @@ Payout for pendings / HDAC Nomp Poll Software
 known issue
 - move to not over 1 coin's hashes
 
-2018-05-24
+
+2018-05-29
 moricpool.com
 mman@entiz.com
 
@@ -18,49 +19,70 @@ mman@entiz.com
 * install : sudo apt install php-cli; sudo apt install php-redis
 */
 
+$wallet_server = "server wallet address";
+$wallet_pool = "pool main address";
+$mysql_host = "localhost";
+$mysql_user = "your mysql userID";
+$mysql_pass = "your mysql password";
+$database = "pool";
+
+// Connect MySQL Database
+$connect = mysqli_connect($mysql_host,$mysql_user,$mysql_pass, $database);
+
 function cmd($cmd) {
 	ob_start();
 	system($cmd);
 	$command = ob_get_contents();
 	ob_end_clean();
-	return $command;
+	return str_replace("\n","",$command);
+}
+
+$error_log = "";
+function send($address,$amount) {
+	// Excute Send coin and Save transaction history
+	global $connect, $error_log, $wallet_pool;
+	$txid = cmd("hdac-cli hdac sendfrom ".$wallet_pool." ".$address." ".$amount);
+	$sql = "insert into payout (address, amount, txid)	values ('".$address."', '".$amount."', '".$txid."') ";
+	$result = mysqli_query($connect,$sql);
+	$error_log .= "\n".time().",".$wallet_pool.",".$address.",".$amount;
 }
 
 $system = json_decode(cmd("hdac-cli hdac getmininginfo"));
 $balance = json_decode(cmd("hdac-cli hdac getmultibalances"));
-$wallet_server = "<Server Wallet - wallet[0]>";
-$wallet_pool = "<Pool Main Wallet - pool_config/h-dac.conf>";
 $balance =  ($balance->$wallet_pool)[0]->qty;
 $pool_fee = 1; // 1%
 $award   = 5000*(100-$pool_fee)/100;
 $start_block = 10000;		// latest payout block
-$redis_host = "127.0.0.1";  // redis_server_host
-$redis_port = 6379;			// redis_server_port
+$redis_host = "127.0.0.1";  	// redis_server_host
+$redis_port = 6379;		// redis_server_port
 $redis = new Redis();
 $redis->connect($redis_host, $redis_port, 1000);
 $arList = $redis->keys("*");
 $true = 0;
 $false = 0;
 $pending = 0;
-$confirm = 100;
-$payout_limit = 1;
+$confirm = 100;		// important option. (Coin will be coming to pool wallet after 100 confirmation)
+$payout_limit = 0.1;	// set up over 0.01  (tx fee is almost 0.1 DAC)
 $worker = array();
 $total_pay = 0;
+
+$block_orphan = "";
+$block_payout = "";
+$block_pending = "";
 
 foreach($arList as $k => $v) {
 	if( preg_match("/round[0-9]/",$v) ) {
 
 		$blockNum = str_replace("hdac:shares:round","",$v);
-		
 		if($blockNum > $start_block) {
-
 			$blockInfo = json_decode(cmd("hdac-cli hdac getblock ".$blockNum));
-
 			if($blockInfo->miner != $wallet_server) { 
 				// Orphaned block
 				$false++;
-			} else {
 
+				$block_orphan .= $blockNum.",";
+	
+			} else {
 				if( $blockInfo->confirmations >= $confirm) {
 					$hashes = $redis->hgetall($v) ;
 					$totalhash = array_sum($hashes);
@@ -69,14 +91,17 @@ foreach($arList as $k => $v) {
 						@$worker[$miner] += $pay;
 						$total_pay += $pay;
 					}
+					// Warning! it will delete round#blocknumber tables
+					// try to test payout result and log data in MySQL before use delete key
+					// $redis->del($v);
+					$block_payout .= $blockNum.",";
 					$true++;	
 				} else {
 					// immature blcock
+					$block_pending .= $blockNum.",";
 					$pending++;
-			
 				}
 			}
-
 		}
 	}
 }
@@ -87,13 +112,14 @@ foreach($worker as $miner => $pay) {
 	$miner = explode(".",$miner); // somebody use worker.rigname
 	$miner = $miner[0];
 	if($pay > $payout_limit) {
-		cmd("hdac-cli hdac sendfrom ".$wallet_pool." ".$miner." ".$pay);
+		send($miner, $pay);
 		$pay_log .= $miner." : ". sprintf("% 11.2f",$pay)."\n";
 		$payed += $pay;
 		usleep(300000);  // pause 0.3sec
 		echo $miner." : ". sprintf("% 11.2f",$pay)."\n";
 	}
 }
+
 
 $date = date("YmdHis");
 $log = "
@@ -113,7 +139,17 @@ Confirm		: ".$confirm." over
 
               http://hdac.moricpool.com
 
+Orphaned Block : ".$block_orphan."
+Payouted Block : ".$block_payout."
+Pending Block  : ".$block_pending."
 ";
+
+// Warning! it will delete hdac:blocksPending key
+// Please keep remark before pass paymets
+// $redis->del("hdac:blocksPending");
+
+echo $log;
+
 
 $saveFile = "./payout_".$date.".log";
 $f = fopen($saveFile,'w');
