@@ -1,29 +1,44 @@
 # HDAC_payout
 
-Payout batch command for HDAC Nomp Pool 
+* 2018-05-24
+* hdac.moricpool.com
+* mman@entiz.com
 
-running from bash shell
-ex) sh ./payout.php
-
+## Payout batch command for HDAC Nomp Pool 
 Payout for pendings / HDAC Nomp Poll Software
 - automatic payout from 100 confirm
 
-known issue
-- move to not over 1 coin's hashes
-
-2018-05-24
-moricpool.com
-mman@entiz.com
-
-* reqire : 
-  php-cli, php-redis, mariadb-server
-
-* install : sudo apt install php-cli php-redis mariadb-server
+-------
+### reqire
+```
+php-cli, php-redis, mariadb-server
+```
 
 
+-------
+### Install
+```
+sudo apt install php-cli php-redis mariadb-server
+```
 
-*** SQL batch ***
+* add crontab ( repeat per 1hr )
+```
+0 * * * * /[DIR]/payout.php
+```
+ 
+-------
+### Run in command
 
+running from bash shell
+```
+sh ./payout.php
+```
+
+
+
+-------
+### SQL batch
+```
 <code>
 CREATE TABLE `payout` (
   `seq` int(11) NOT NULL,
@@ -43,4 +58,5 @@ ALTER TABLE `payout`
 
 ALTER TABLE `payout`
   MODIFY `seq` int(11) NOT NULL AUTO_INCREMENT;
-</code>
+
+```
