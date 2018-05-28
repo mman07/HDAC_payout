@@ -24,8 +24,7 @@ mman@entiz.com
 
 *** SQL batch ***
 
-
-
+<code>
 CREATE TABLE `payout` (
   `seq` int(11) NOT NULL,
   `block` int(11) NOT NULL,
@@ -35,13 +34,6 @@ CREATE TABLE `payout` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `payout`
---
 ALTER TABLE `payout`
   ADD PRIMARY KEY (`seq`),
   ADD KEY `address` (`address`),
@@ -49,13 +41,6 @@ ALTER TABLE `payout`
   ADD KEY `timestamp` (`timestamp`),
   ADD KEY `block` (`block`);
 
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `payout`
---
 ALTER TABLE `payout`
   MODIFY `seq` int(11) NOT NULL AUTO_INCREMENT;
-  
+</code>
