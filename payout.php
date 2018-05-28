@@ -62,7 +62,7 @@ $true = 0;
 $false = 0;
 $pending = 0;
 $confirm = 100;		// important option. (Coin will be coming to pool wallet after 100 confirmation)
-$payout_limit = 0.1;	// set up over 0.01  (tx fee is almost 0.1 DAC)
+$payout_limit = 0.01;	// set up over 0.01  (tx fee is almost 0.01 DAC)
 $worker = array();
 $total_pay = 0;
 
