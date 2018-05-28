@@ -39,7 +39,6 @@ sh ./payout.php
 -------
 ### SQL batch
 ```
-<code>
 CREATE TABLE `payout` (
   `seq` int(11) NOT NULL,
   `block` int(11) NOT NULL,
