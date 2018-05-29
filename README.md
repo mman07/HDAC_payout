@@ -25,7 +25,19 @@ sudo apt install php-cli php-redis mariadb-server php-mysql
 ```
 0 * * * * /[DIR]/payout.php
 ```
- 
+
+-------
+### Setup MySQL
+```
+sudo service mysql start
+mysql_secure_install
+mysql 
+
+create user userid
+create user 'userid'@'localhost'  identified by 'password'
+
+```
+
 -------
 ### Run in command
 
