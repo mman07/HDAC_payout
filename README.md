@@ -11,14 +11,14 @@ Payout for pendings / HDAC Nomp Poll Software
 -------
 ### reqire
 ```
-php-cli, php-redis, mariadb-server
+php-cli, php-redis, mariadb-server, php-mysql
 ```
 
 
 -------
 ### Install
 ```
-sudo apt install php-cli php-redis mariadb-server
+sudo apt install php-cli php-redis mariadb-server php-mysql
 ```
 
 * add crontab ( repeat per 1hr )
