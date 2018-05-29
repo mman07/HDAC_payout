@@ -30,7 +30,7 @@ sudo apt install php-cli php-redis mariadb-server php-mysql
 ### Setup MySQL
 ```
 sudo service mysql start
-mysql_secure_install
+mysql_secure_installation
 mysql 
 
 create user userid
