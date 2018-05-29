@@ -43,7 +43,8 @@ create user 'userid'@'localhost'  identified by 'password'
 
 running from bash shell
 ```
-sh ./payout.php
+
+./payout.php
 ```
 
 
