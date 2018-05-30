@@ -33,9 +33,10 @@ sudo service mysql start
 mysql_secure_installation
 mysql 
 
-create user userid
-create user 'userid'@'localhost'  identified by 'password'
-
+create database pool;
+create user userid;
+create user 'userid'@'localhost'  identified by 'password';
+grant all privileges on pool.* to 'userid'@'localhost';
 ```
 
 -------
