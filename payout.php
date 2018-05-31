@@ -93,7 +93,8 @@ foreach($arList as $k => $v) {
 					}
 					// Warning! it will delete round#blocknumber tables
 					// try to test payout result and log data in MySQL before use delete key
-					// $redis->del($v);
+					$redis->del($v);
+					
 					$block_payout .= $blockNum.",";
 					$true++;	
 				} else {
@@ -146,7 +147,7 @@ Pending Block  : ".$block_pending."
 
 // Warning! it will delete hdac:blocksPending key
 // Please keep remark before pass paymets
-// $redis->del("hdac:blocksPending");
+$redis->del("hdac:blocksPending");
 
 echo $log;
 
